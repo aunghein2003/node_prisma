@@ -9,7 +9,7 @@ var __awaiter = (this && this.__awaiter) || function (thisArg, _arguments, P, ge
     });
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.deleteUserDB = exports.updateUserDB = exports.addUserToDB = exports.fetchUsersFromDB = void 0;
+exports.checkUser = exports.deleteUserDB = exports.updateUserDB = exports.addUserToDB = exports.fetchUsersFromDB = void 0;
 const client_1 = require("@prisma/client");
 const prisma = new client_1.PrismaClient();
 function fetchUsersFromDB() {
@@ -46,3 +46,13 @@ function deleteUserDB(id) {
     });
 }
 exports.deleteUserDB = deleteUserDB;
+function checkUser(id) {
+    return __awaiter(this, void 0, void 0, function* () {
+        return yield prisma.user.findFirst({
+            where: {
+                id: id,
+            },
+        });
+    });
+}
+exports.checkUser = checkUser;

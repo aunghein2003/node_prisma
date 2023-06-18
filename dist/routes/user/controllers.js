@@ -43,6 +43,11 @@ function updateUser(req, res) {
     var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
+        const user = yield (0, models_1.checkUser)(Number(id));
+        if (!user)
+            return res
+                .status(400)
+                .json({ success: false, msg: `Give ID ${id} does not match any user` });
         const name = ((_a = req.body) === null || _a === void 0 ? void 0 : _a.name) || "";
         if (!name)
             return res
@@ -61,6 +66,11 @@ exports.updateUser = updateUser;
 function deleteUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
+        const user = yield (0, models_1.checkUser)(Number(id));
+        if (!user)
+            return res
+                .status(400)
+                .json({ success: false, msg: `Give ID ${id} does not match any user` });
         try {
             yield (0, models_1.deleteUserDB)(Number(id));
             res.status(200).json({ success: true, msg: "Successfully deleted user" });

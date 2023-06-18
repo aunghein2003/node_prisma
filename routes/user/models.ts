@@ -28,3 +28,11 @@ export async function deleteUserDB(id: number) {
     where: { id: id },
   });
 }
+
+export async function checkUser(id: number) {
+  return await prisma.user.findFirst({
+    where: {
+      id: id,
+    },
+  });
+}

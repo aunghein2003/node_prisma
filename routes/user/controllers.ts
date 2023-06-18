@@ -1,6 +1,7 @@
 import { Request, Response } from "express";
 import {
   addUserToDB,
+  checkUser,
   deleteUserDB,
   fetchUsersFromDB,
   updateUserDB,
@@ -31,8 +32,13 @@ export async function createUser(req: Request, res: Response) {
 
 export async function updateUser(req: Request, res: Response) {
   const { id } = req.params;
-  const name = req.body?.name || "";
+  const user = await checkUser(Number(id));
+  if (!user)
+    return res
+      .status(400)
+      .json({ success: false, msg: `Give ID ${id} does not match any user` });
 
+  const name = req.body?.name || "";
   if (!name)
     return res
       .status(400)
@@ -48,6 +54,11 @@ export async function updateUser(req: Request, res: Response) {
 
 export async function deleteUser(req: Request, res: Response) {
   const { id } = req.params;
+  const user = await checkUser(Number(id));
+  if (!user)
+    return res
+      .status(400)
+      .json({ success: false, msg: `Give ID ${id} does not match any user` });
 
   try {
     await deleteUserDB(Number(id));
