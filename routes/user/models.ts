@@ -8,31 +8,42 @@ export async function fetchUsersFromDB() {
   return user;
 }
 
-export async function addUserToDB(name: string) {
+export async function addUserToDB(name: string, email: string) {
   await prisma.user.create({
     data: {
-      name: name,
+      name,
+      email,
     },
   });
 }
 
-export async function updateUserDB(id: number, name: string) {
+export async function updateUserDB(
+  id: number,
+  updateData: { name: string; email: string }
+) {
   await prisma.user.update({
-    where: { id: id },
-    data: { name: name },
+    where: { id },
+    data: { ...updateData },
   });
 }
 
 export async function deleteUserDB(id: number) {
   await prisma.user.delete({
-    where: { id: id },
+    where: { id },
   });
 }
 
-export async function checkUser(id: number) {
+export async function checkUser({
+  id,
+  email,
+}: {
+  id?: number;
+  email?: string;
+}) {
   return await prisma.user.findFirst({
     where: {
-      id: id,
+      id,
+      email,
     },
   });
 }

@@ -11,6 +11,36 @@ datasource db {
 }
 
 model User {
+  id           Int     @id @default(autoincrement())
+  name         String?
+  email        String  @unique
+  role         Role    @default(User)
+  writtenPost  Post[]  @relation("WrittenPosts")
+  favoritePost Post[]  @relation("FavoritePosts")
+
+  @@index([email])
+}
+
+model Post {
+  id            Int        @id @default(autoincrement())
+  title         String
+  rating        Float
+  createdAt     DateTime   @default(now())
+  updatedAt     DateTime   @updatedAt
+  author        User       @relation("WrittenPosts", fields: [authorId], references: [id])
+  authorId      Int
+  favoritedBy   User?      @relation("FavoritePosts", fields: [favoritedById], references: [id])
+  favoritedById Int
+  categories    Category[]
+}
+
+model Category {
   id   Int    @id @default(autoincrement())
-  name String
+  name String @unique
+  post Post[]
+}
+
+enum Role {
+  Admin
+  User
 }

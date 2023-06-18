@@ -19,21 +19,22 @@ function fetchUsersFromDB() {
     });
 }
 exports.fetchUsersFromDB = fetchUsersFromDB;
-function addUserToDB(name) {
+function addUserToDB(name, email) {
     return __awaiter(this, void 0, void 0, function* () {
         yield prisma.user.create({
             data: {
-                name: name,
+                name,
+                email,
             },
         });
     });
 }
 exports.addUserToDB = addUserToDB;
-function updateUserDB(id, name) {
+function updateUserDB(id, updateData) {
     return __awaiter(this, void 0, void 0, function* () {
         yield prisma.user.update({
-            where: { id: id },
-            data: { name: name },
+            where: { id },
+            data: Object.assign({}, updateData),
         });
     });
 }
@@ -41,16 +42,17 @@ exports.updateUserDB = updateUserDB;
 function deleteUserDB(id) {
     return __awaiter(this, void 0, void 0, function* () {
         yield prisma.user.delete({
-            where: { id: id },
+            where: { id },
         });
     });
 }
 exports.deleteUserDB = deleteUserDB;
-function checkUser(id) {
+function checkUser({ id, email, }) {
     return __awaiter(this, void 0, void 0, function* () {
         return yield prisma.user.findFirst({
             where: {
-                id: id,
+                id,
+                email,
             },
         });
     });

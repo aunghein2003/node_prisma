@@ -24,37 +24,50 @@ function getUsers(req, res) {
 }
 exports.getUsers = getUsers;
 function createUser(req, res) {
-    var _a;
+    var _a, _b;
     return __awaiter(this, void 0, void 0, function* () {
         const name = ((_a = req.body) === null || _a === void 0 ? void 0 : _a.name) || "";
-        if (!name)
-            return res.status(400).json({ success: false, msg: "Invalid Request" });
+        const email = ((_b = req.body) === null || _b === void 0 ? void 0 : _b.email) || "";
+        //if no data name and email in request body
+        if (!name || !email)
+            return res
+                .status(400)
+                .json({ success: false, msg: "Please provide name and email" });
+        const user = yield (0, models_1.checkUser)({ email }); //check user already exists with the same email
+        if (user)
+            return res
+                .status(400)
+                .json({ success: false, msg: "User already existed with this email" });
         try {
-            yield (0, models_1.addUserToDB)(name);
+            yield (0, models_1.addUserToDB)(name, email);
             res.status(201).json({ success: true, msg: "New user created" });
         }
         catch (error) {
+            console.log(error);
             res.status(500).json({ success: false, msg: error });
         }
     });
 }
 exports.createUser = createUser;
 function updateUser(req, res) {
-    var _a;
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
-        const user = yield (0, models_1.checkUser)(Number(id));
+        const user = yield (0, models_1.checkUser)({ id: Number(id) }); //check there was no user with an id
         if (!user)
             return res
                 .status(400)
                 .json({ success: false, msg: `Give ID ${id} does not match any user` });
-        const name = ((_a = req.body) === null || _a === void 0 ? void 0 : _a.name) || "";
-        if (!name)
+        //if no data in req body
+        if (!Object.keys(req.body).length)
             return res
                 .status(400)
-                .json({ success: false, msg: "Please provide update name" });
+                .json({ success: false, msg: "Please provide update name or email" });
+        let updateUser = Object.assign(Object.assign({}, user), req.body);
         try {
-            yield (0, models_1.updateUserDB)(Number(id), name);
+            yield (0, models_1.updateUserDB)(Number(id), {
+                name: updateUser.name,
+                email: updateUser.email,
+            });
             res.status(200).json({ success: true, msg: "Successfully updated user" });
         }
         catch (error) {
@@ -66,7 +79,7 @@ exports.updateUser = updateUser;
 function deleteUser(req, res) {
     return __awaiter(this, void 0, void 0, function* () {
         const { id } = req.params;
-        const user = yield (0, models_1.checkUser)(Number(id));
+        const user = yield (0, models_1.checkUser)({ id: Number(id) });
         if (!user)
             return res
                 .status(400)
